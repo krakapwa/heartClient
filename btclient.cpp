@@ -43,8 +43,7 @@ void Btclient::startClient(const QBluetoothServiceInfo &remoteService){
 
     connect(socket, SIGNAL(readyRead()), this, SLOT(readSocket()));
     connect(socket, SIGNAL(connected()), this, SLOT(connected()));
-    connect(socket, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
-
+    connect(socket, SIGNAL(disconnected()), this, SLOT(disconnected()));
 }
 
 void Btclient::readSocket()
@@ -57,12 +56,12 @@ void Btclient::readSocket()
         emit messageReceived(socket->peerName(),
                              QString::fromUtf8(line.constData(), line.length()));
     }
-
 }
 
 void Btclient::toggleStartStop(){
-    qDebug() << "toggleStartStop";
-    sendMessage("start");
+    QDateTime currentTime = QDateTime::currentDateTime();
+    qDebug() << currentTime;
+    sendMessage("startStop " + currentTime.toString("dd-MM-yyyy_hh-mm-ss"));
 }
 
 void Btclient::connected()
@@ -70,9 +69,21 @@ void Btclient::connected()
     emit connected(socket->peerName());
 }
 
+
+void Btclient::disconnected()
+{
+    emit disconnectedSig();
+}
+
+void Btclient::stopClient()
+{
+    delete socket;
+    socket = 0;
+    //emit disconnected();
+}
+
 void Btclient::sendMessage(const QString &message)
 {
     QByteArray text = message.toUtf8() + '\n';
-    qDebug() << "sendMessage";
     socket->write(text);
 }

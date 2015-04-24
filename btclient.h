@@ -7,6 +7,7 @@
 #include <QMutex>
 #include <QWaitCondition>
 #include <qbluetoothserviceinfo.h>
+#include <QDateTime>
 
 QT_FORWARD_DECLARE_CLASS(QBluetoothSocket)
 
@@ -23,14 +24,16 @@ public:
     void startContinuousDaq();
     void stopContinuousDaq();
     void startClient(const QBluetoothServiceInfo &remoteService);
+    void stopClient();
 
 signals:
     void finished();
     void messageReceived(const QString &sender, const QString &message);
-    void disconnected();
     void connected(const QString &name);
+    void disconnectedSig();
 
 public slots:
+    void disconnected();
     void connected();
     void readSocket();
     void toggleStartStop();

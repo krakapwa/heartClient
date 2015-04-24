@@ -36,8 +36,8 @@ private slots:
     void on_connectButton_clicked();
     void showMessage(const QString &sender, const QString &message);
     void toggleConnectButton();
-    void clientDisconnected();
     void clientConnected(const QString &name);
+    void clientDisconnected();
 
 public slots:
    void processMessage(QString);

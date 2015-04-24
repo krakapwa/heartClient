@@ -11,7 +11,6 @@ MainClient::MainClient(QMainWindow *parent) :
 {
     ui->setupUi(this);
 
-   ui->console->append("Welcome");
    ui->startButton->setEnabled(false);
     //btclient = new Btclient*;
 }
@@ -28,7 +27,7 @@ void MainClient::startDiscovery(const QBluetoothUuid &uuid)
     connect(m_discoveryAgent, SIGNAL(serviceDiscovered(QBluetoothServiceInfo)),
             this, SLOT(serviceDiscovered(QBluetoothServiceInfo)));
 
-    ui->console->setText(tr("Scanning..."));
+    ui->console->append(tr("Scanning...\n"));
     if (m_discoveryAgent->isActive())
         m_discoveryAgent->stop();
 
@@ -64,7 +63,7 @@ void MainClient::serviceDiscovered(const QBluetoothServiceInfo &serviceInfo)
 
     QObject::connect(client, SIGNAL(messageReceived(QString,QString)),
             this, SLOT(showMessage(QString,QString)));
-    QObject::connect(client, SIGNAL(disconnected()), this, SLOT(clientDisconnected()));
+    QObject::connect(client, SIGNAL(disconnectedSig()), this, SLOT(clientDisconnected()));
     QObject::connect(client, SIGNAL(connected(QString)), this, SLOT(clientConnected(QString)));
     QObject::connect(this, SIGNAL(sendMessage(QString)), client, SLOT(sendMessage(QString)));
     client->startClient(service);
@@ -74,7 +73,7 @@ void MainClient::serviceDiscovered(const QBluetoothServiceInfo &serviceInfo)
 void MainClient::showMessage(const QString &sender, const QString &message)
 {
     ui->console->insertPlainText(QString::fromLatin1("%1: %2\n").arg(sender, message));
-    ui->console->ensureCursorVisible();
+    //ui->console->ensureCursorVisible();
 }
 
 MainClient::~MainClient()
@@ -90,7 +89,6 @@ void MainClient::on_startButton_clicked()
 void MainClient::toggleConnectButton()
 {
     if(ui->connectButton->isEnabled()){
-        qDebug() << "hi";
         ui->connectButton->setEnabled(false);
         ui->startButton->setEnabled(true);
     }
@@ -116,8 +114,6 @@ void MainClient::processMessage(QString str){
 
 void MainClient::on_connectButton_clicked()
 {
-    qDebug() << "lol";
-    ui->console->append("Discovering...");
     startDiscovery(QBluetoothUuid(serviceUuid));
 }
 
@@ -130,12 +126,15 @@ void MainClient::closeEvent(QCloseEvent *event)
 void MainClient::clientDisconnected()
 {
     Btclient *client = qobject_cast<Btclient *>(sender());
+    client->stopClient();
     if (client) {
         client->deleteLater();
     }
+    ui->console->insertPlainText("disconnected.\n");
+    toggleConnectButton();
 }
 
 void MainClient::clientConnected(const QString &name)
 {
-    ui->console->insertPlainText(QString::fromLatin1("%1 is connected.\n").arg(name));
+    ui->console->insertPlainText(QString::fromLatin1("Connected to %1 .\n").arg(name));
 }
