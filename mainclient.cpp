@@ -58,8 +58,6 @@ void MainClient::serviceDiscovered(const QBluetoothServiceInfo &serviceInfo)
 
     // Create client
     Btclient* client = new Btclient();
-    QObject::connect(client, SIGNAL(sendMessage(QString)),
-            this, SLOT(processMessage(QString)));
     QObject::connect(this, SIGNAL(startClicked()),
             client, SLOT(toggleStartStop()));
     qDebug() << "Connecting...";
@@ -67,44 +65,16 @@ void MainClient::serviceDiscovered(const QBluetoothServiceInfo &serviceInfo)
     QObject::connect(client, SIGNAL(messageReceived(QString,QString)),
             this, SLOT(showMessage(QString,QString)));
     QObject::connect(client, SIGNAL(disconnected()), this, SLOT(clientDisconnected()));
-    QObject::connect(client, SIGNAL(connected(QString)), this, SLOT(connected(QString)));
+    QObject::connect(client, SIGNAL(connected(QString)), this, SLOT(clientConnected(QString)));
     QObject::connect(this, SIGNAL(sendMessage(QString)), client, SLOT(sendMessage(QString)));
-    qDebug() << "Start client";
     client->startClient(service);
-
-
+    toggleStartButton();
 }
 
 void MainClient::showMessage(const QString &sender, const QString &message)
 {
-    ui->chat->insertPlainText(QString::fromLatin1("%1: %2\n").arg(sender, message));
-    ui->chat->ensureCursorVisible();
-}
-
-void MainClient::connectToServer()
-{
-
-    // scan for services
-
-    startDiscovery(QBluetoothUuid(serviceUuid));
-
-        // Create client
-        qDebug() << "Going to create client";
-        Btclient *client = new Btclient(this);
-qDebug() << "Connecting...";
-
-        connect(client, SIGNAL(messageReceived(QString,QString)),
-                this, SLOT(showMessage(QString,QString)));
-        connect(client, SIGNAL(disconnected()), this, SLOT(clientDisconnected()));
-        connect(client, SIGNAL(connected(QString)), this, SLOT(connected(QString)));
-        connect(this, SIGNAL(sendMessage(QString)), client, SLOT(sendMessage(QString)));
-qDebug() << "Start client";
-        //client->startClient(service);
-
-        //clients.append(client);
-
-
-    ui->connectButton->setEnabled(true);
+    ui->console->insertPlainText(QString::fromLatin1("%1: %2\n").arg(sender, message));
+    ui->console->ensureCursorVisible();
 }
 
 MainClient::~MainClient()
@@ -120,6 +90,7 @@ void MainClient::on_startButton_clicked()
 void MainClient::toggleConnectButton()
 {
     if(ui->connectButton->isEnabled()){
+        qDebug() << "hi";
         ui->connectButton->setEnabled(false);
         ui->startButton->setEnabled(true);
     }
@@ -154,4 +125,17 @@ void MainClient::closeEvent(QCloseEvent *event)
 {
         emit closeClient();
         event->accept();
+}
+
+void MainClient::clientDisconnected()
+{
+    Btclient *client = qobject_cast<Btclient *>(sender());
+    if (client) {
+        client->deleteLater();
+    }
+}
+
+void MainClient::clientConnected(const QString &name)
+{
+    ui->console->insertPlainText(QString::fromLatin1("%1 is connected.\n").arg(name));
 }

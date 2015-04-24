@@ -27,14 +27,17 @@ signals:
     void startClicked();
     void connectClicked();
     void closeClient();
-
+    void sendMessage(QString);
 private slots:
 
     void serviceDiscovered(const QBluetoothServiceInfo &serviceInfo);
     void on_startButton_clicked();
-    void toggleConnectButton();
     void toggleStartButton();
     void on_connectButton_clicked();
+    void showMessage(const QString &sender, const QString &message);
+    void toggleConnectButton();
+    void clientDisconnected();
+    void clientConnected(const QString &name);
 
 public slots:
    void processMessage(QString);

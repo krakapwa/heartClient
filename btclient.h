@@ -25,16 +25,16 @@ public:
     void startClient(const QBluetoothServiceInfo &remoteService);
 
 signals:
-    void sendMessage(QString str);
     void finished();
     void messageReceived(const QString &sender, const QString &message);
     void disconnected();
+    void connected(const QString &name);
 
 public slots:
-    void readSocket();
-    //void connected(const QString &name);
     void connected();
+    void readSocket();
     void toggleStartStop();
+    void sendMessage(const QString &message);
 
 protected:
     //void run();
