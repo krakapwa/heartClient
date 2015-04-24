@@ -50,6 +50,7 @@ private:
     QList<QBluetoothHostInfo> localAdapters;
     QBluetoothServiceDiscoveryAgent *m_discoveryAgent;
     QBluetoothServiceInfo service;
+    void setHeight(QPlainTextEdit* edit, int nRows);
 };
 
 #endif // MAINCLIENT_H

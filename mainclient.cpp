@@ -11,10 +11,17 @@ MainClient::MainClient(QMainWindow *parent) :
 {
     ui->setupUi(this);
 
+    setHeight(ui->console,15);
    ui->startButton->setEnabled(false);
     //btclient = new Btclient*;
 }
 
+void MainClient::setHeight(QPlainTextEdit* edit, int nRows)
+{
+  QFontMetrics m (edit -> font()) ;
+  int RowHeight = m.lineSpacing() ;
+  edit -> setFixedHeight  (nRows * RowHeight) ;
+}
 void MainClient::startDiscovery(const QBluetoothUuid &uuid)
 {
 
@@ -27,7 +34,7 @@ void MainClient::startDiscovery(const QBluetoothUuid &uuid)
     connect(m_discoveryAgent, SIGNAL(serviceDiscovered(QBluetoothServiceInfo)),
             this, SLOT(serviceDiscovered(QBluetoothServiceInfo)));
 
-    ui->console->append(tr("Scanning...\n"));
+    ui->console->appendPlainText("Scanning...\n");
     if (m_discoveryAgent->isActive())
         m_discoveryAgent->stop();
 
@@ -109,7 +116,7 @@ void MainClient::toggleStartButton()
 void MainClient::processMessage(QString str){
     QDateTime current = QDateTime::currentDateTime();
 
-       ui->console->append("["+current.toString()+"] "+str);
+       ui->console->appendPlainText("["+current.toString()+"] "+str);
 }
 
 void MainClient::on_connectButton_clicked()
