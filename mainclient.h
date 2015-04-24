@@ -6,6 +6,10 @@
 #include <QCloseEvent>
 #include "btclient.h"
 #include "ui_mainclient.h"
+#include <qbluetoothserviceinfo.h>
+#include <qbluetoothsocket.h>
+#include <qbluetoothhostinfo.h>
+#include <qbluetoothservicediscoveryagent.h>
 
 namespace Ui {
 class MainClient;
@@ -18,6 +22,7 @@ class MainClient : public QMainWindow
 public:
     MainClient(QMainWindow *parent = 0);
     ~MainClient();
+    void startDiscovery(const QBluetoothUuid &uuid);
 signals:
     void startClicked();
     void connectClicked();
@@ -25,10 +30,11 @@ signals:
 
 private slots:
 
-    void on_start_button_clicked();
-    void on_connect_button_clicked();
+    void serviceDiscovered(const QBluetoothServiceInfo &serviceInfo);
+    void on_startButton_clicked();
     void toggleConnectButton();
     void toggleStartButton();
+    void on_connectButton_clicked();
 
 public slots:
    void processMessage(QString);
@@ -37,6 +43,9 @@ private:
     Ui::MainClient *ui;
    Btclient client ;
     void closeEvent(QCloseEvent*);
+    void connectToServer();
+    QList<QBluetoothHostInfo> localAdapters;
+    QBluetoothServiceDiscoveryAgent *m_discoveryAgent;
 };
 
 #endif // MAINCLIENT_H

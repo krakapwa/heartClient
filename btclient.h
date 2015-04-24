@@ -6,14 +6,9 @@
 #include <QThread>
 #include <QMutex>
 #include <QWaitCondition>
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <sys/socket.h>
-#include <fcntl.h>
-#include <bluetooth/bluetooth.h>
-#include <bluetooth/rfcomm.h>
-#include <time.h>
+#include <qbluetoothserviceinfo.h>
+
+QT_FORWARD_DECLARE_CLASS(QBluetoothSocket)
 
 QT_USE_NAMESPACE
 
@@ -27,21 +22,19 @@ public:
     void singleShot(int nsec);
     void startContinuousDaq();
     void stopContinuousDaq();
-    bool connectToHost();
-    void startClient();
-    void beat();
-    void sendBeats(int nsec);
+    void startClient(const QBluetoothServiceInfo &remoteService);
 
 signals:
     void sendMessage(QString str);
-    void closeClient();
     void finished();
-    void toggleConnected();
-    void toggleStarted();
+    void messageReceived(const QString &sender, const QString &message);
+    void disconnected();
 
 public slots:
-    void toggleEvent();
-    void setQuitTrue();
+    void readSocket();
+    //void connected(const QString &name);
+    void connected();
+    void toggleStartStop();
 
 protected:
     //void run();
@@ -50,29 +43,12 @@ private:
 
     QMutex mutex;
     QWaitCondition cond;
-    bool quit;
-    QString writeReadStr(const QString&, int writetoreaddelay);
-    QString readSocket(char* buffer, int buffer_size);
-    int secsToNbeats(int nsec);
-    void setTimeout(int seconds);
-    struct sockaddr_rc addr;
-    int s, status;
-     char* dest;
-    time_t thisTime;
-    struct tm *info;
-    char* tFormat;
-    char timeBuffer[80];
     int msgSize;
     int beatPeriod;
     int timeoutSecs;
     bool event;
-    QString servBeatResponse;
-    QString servAcceptedConnectionResponse;
-    QString waitStr;
-    QString servWaitStr;
+    QBluetoothSocket *socket;
 
-    bool connected;
-    bool started;
 };
 
 #endif // BTCLIENT_H

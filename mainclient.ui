@@ -14,7 +14,7 @@
    <string>MainClient</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QTextEdit" name="textEdit">
+   <widget class="QTextEdit" name="console">
     <property name="geometry">
      <rect>
       <x>30</x>
@@ -24,7 +24,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QPushButton" name="start_button">
+   <widget class="QPushButton" name="startButton">
     <property name="geometry">
      <rect>
       <x>80</x>
@@ -37,7 +37,7 @@
      <string>Start/Stop</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="connect_button">
+   <widget class="QPushButton" name="connectButton">
     <property name="geometry">
      <rect>
       <x>190</x>
@@ -57,7 +57,7 @@
      <x>0</x>
      <y>0</y>
      <width>401</width>
-     <height>23</height>
+     <height>25</height>
     </rect>
    </property>
   </widget>
