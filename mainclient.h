@@ -46,6 +46,7 @@ private:
     void connectToServer();
     QList<QBluetoothHostInfo> localAdapters;
     QBluetoothServiceDiscoveryAgent *m_discoveryAgent;
+    QBluetoothServiceInfo service;
 };
 
 #endif // MAINCLIENT_H

@@ -21,5 +21,4 @@ HEADERS  += mainclient.h \
 
 FORMS    += mainclient.ui
 
-INCLUDEPATH += /usr/include
-LIBS += -L/usr/lib -lpthread -lbluetooth
+LIBS += -L/usr/lib

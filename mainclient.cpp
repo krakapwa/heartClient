@@ -2,6 +2,7 @@
 #include "ui_mainclient.h"
 
 static const QLatin1String serviceUuid("e8e10f95-1a70-4b27-9ccf-02010264e9c7");
+static const QLatin1String remoteAddress("00:02:72:C9:1B:25");
 
 MainClient::MainClient(QMainWindow *parent) :
     QMainWindow(parent),
@@ -10,12 +11,6 @@ MainClient::MainClient(QMainWindow *parent) :
 {
     ui->setupUi(this);
 
-    //QObject::connect(ui->connect_button, SIGNAL(clicked()),
-           // this, SLOT(on_connect_button_clicked()));
-    QObject::connect(&client, SIGNAL(sendMessage(QString)),
-            this, SLOT(processMessage(QString)));
-    QObject::connect(this, SIGNAL(startClicked()),
-            &client, SLOT(toggleStartStop()));
    ui->console->append("Welcome");
    ui->startButton->setEnabled(false);
     //btclient = new Btclient*;
@@ -38,8 +33,8 @@ void MainClient::startDiscovery(const QBluetoothUuid &uuid)
         m_discoveryAgent->stop();
 
     m_discoveryAgent->setUuidFilter(uuid);
+    m_discoveryAgent->setRemoteAddress(QBluetoothAddress(remoteAddress));
     m_discoveryAgent->start(QBluetoothServiceDiscoveryAgent::FullDiscovery);
-    qDebug() << "startDisco";
 
 }
 
@@ -56,6 +51,34 @@ void MainClient::serviceDiscovered(const QBluetoothServiceInfo &serviceInfo)
              << serviceInfo.protocolServiceMultiplexer();
     qDebug() << "\tRFCOMM server channel:" << serviceInfo.serverChannel();
 
+    service = serviceInfo;
+
+    qDebug() << "Connecting to service" << service.serviceName()
+             << "on" << service.device().name();
+
+    // Create client
+    Btclient* client = new Btclient();
+    QObject::connect(client, SIGNAL(sendMessage(QString)),
+            this, SLOT(processMessage(QString)));
+    QObject::connect(this, SIGNAL(startClicked()),
+            client, SLOT(toggleStartStop()));
+    qDebug() << "Connecting...";
+
+    QObject::connect(client, SIGNAL(messageReceived(QString,QString)),
+            this, SLOT(showMessage(QString,QString)));
+    QObject::connect(client, SIGNAL(disconnected()), this, SLOT(clientDisconnected()));
+    QObject::connect(client, SIGNAL(connected(QString)), this, SLOT(connected(QString)));
+    QObject::connect(this, SIGNAL(sendMessage(QString)), client, SLOT(sendMessage(QString)));
+    qDebug() << "Start client";
+    client->startClient(service);
+
+
+}
+
+void MainClient::showMessage(const QString &sender, const QString &message)
+{
+    ui->chat->insertPlainText(QString::fromLatin1("%1: %2\n").arg(sender, message));
+    ui->chat->ensureCursorVisible();
 }
 
 void MainClient::connectToServer()
@@ -118,10 +141,6 @@ void MainClient::processMessage(QString str){
     QDateTime current = QDateTime::currentDateTime();
 
        ui->console->append("["+current.toString()+"] "+str);
-
-    if(str == "Server can't be reached"){
-        toggleConnectButton();
-    }
 }
 
 void MainClient::on_connectButton_clicked()
