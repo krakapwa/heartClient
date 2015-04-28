@@ -53,6 +53,7 @@ void Btclient::readSocket()
 
     while (socket->canReadLine()) {
         QByteArray line = socket->readLine();
+        qDebug() << "Received from " + socket->peerName() + ": " + QString::fromUtf8(line.constData(), line.length());
         emit messageReceived(socket->peerName(),
                              QString::fromUtf8(line.constData(), line.length()));
     }

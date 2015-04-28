@@ -11,8 +11,12 @@ MainClient::MainClient(QMainWindow *parent) :
 {
     ui->setupUi(this);
 
-    setHeight(ui->console,15);
    ui->startButton->setEnabled(false);
+
+    QList<QBluetoothHostInfo> localAdapters;
+
+    localAdapters = QBluetoothLocalDevice::allDevices();
+    qDebug() << localAdapters.size();
     //btclient = new Btclient*;
 }
 
@@ -79,7 +83,7 @@ void MainClient::serviceDiscovered(const QBluetoothServiceInfo &serviceInfo)
 
 void MainClient::showMessage(const QString &sender, const QString &message)
 {
-    ui->console->insertPlainText(QString::fromLatin1("%1: %2\n").arg(sender, message));
+    ui->console->insertPlainText(QString::fromLatin1("%1: %2").arg(sender, message));
     //ui->console->ensureCursorVisible();
 }
 
@@ -137,7 +141,7 @@ void MainClient::clientDisconnected()
     if (client) {
         client->deleteLater();
     }
-    ui->console->insertPlainText("disconnected.\n");
+    ui->console->insertPlainText("disconnected.");
     toggleConnectButton();
 }
 

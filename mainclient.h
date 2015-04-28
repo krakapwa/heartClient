@@ -10,6 +10,7 @@
 #include <qbluetoothsocket.h>
 #include <qbluetoothhostinfo.h>
 #include <qbluetoothservicediscoveryagent.h>
+#include <QBluetoothLocalDevice>
 
 namespace Ui {
 class MainClient;
