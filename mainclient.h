@@ -4,7 +4,6 @@
 #include <QDateTime>
 #include <QCloseEvent>
 #include "btclient.h"
-#include "ui_mainclient.h"
 #include <qbluetoothserviceinfo.h>
 #include <qbluetoothsocket.h>
 #include <qbluetoothhostinfo.h>
@@ -56,7 +55,6 @@ private:
     QList<QBluetoothHostInfo> localAdapters;
     QBluetoothServiceDiscoveryAgent *m_discoveryAgent;
     QBluetoothServiceInfo service;
-    void setHeight(QPlainTextEdit* edit, int nRows);
 };
 
 #endif // MAINCLIENT_H
