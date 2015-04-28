@@ -4,9 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui bluetooth
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT       += core bluetooth qml quick
 
 TARGET = btclientqt
 TEMPLATE = app
@@ -17,8 +15,9 @@ SOURCES += main.cpp\
     btclient.cpp
 
 HEADERS  += mainclient.h \
-    btclient.h
+    btclient.h \
+    qtquickcontrolsapplication.h
 
-FORMS    += mainclient.ui
+RESOURCES += qml.qrc
 
 LIBS += -L/usr/lib

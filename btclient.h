@@ -1,7 +1,6 @@
 #ifndef BTCLIENT_H
 #define BTCLIENT_H
 
-#include <QMainWindow>
 #include <QDebug>
 #include <QThread>
 #include <QMutex>

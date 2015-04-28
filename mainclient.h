@@ -1,7 +1,6 @@
 #ifndef MAINCLIENT_H
 #define MAINCLIENT_H
 
-#include <QMainWindow>
 #include <QDateTime>
 #include <QCloseEvent>
 #include "btclient.h"
@@ -16,25 +15,31 @@ namespace Ui {
 class MainClient;
 }
 
-class MainClient : public QMainWindow
+class MainClient : public QObject
 {
     Q_OBJECT
 
 public:
-    MainClient(QMainWindow *parent = 0);
+    MainClient(QObject *parent = 0);
     ~MainClient();
     void startDiscovery(const QBluetoothUuid &uuid);
+    void initGui();
 signals:
     void startClicked();
     void connectClicked();
     void closeClient();
     void sendMessage(QString);
+    void appendText(QVariant text);
+    void disableConnectButton();
+    void enableConnectButton();
+    void disableStartStopButton();
+    void enableStartStopButton();
 private slots:
 
     void serviceDiscovered(const QBluetoothServiceInfo &serviceInfo);
-    void on_startButton_clicked();
+    void startStopButtonClicked();
+    void connectButtonClicked();
     void toggleStartButton();
-    void on_connectButton_clicked();
     void showMessage(const QString &sender, const QString &message);
     void toggleConnectButton();
     void clientConnected(const QString &name);
