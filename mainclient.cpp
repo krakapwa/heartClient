@@ -12,6 +12,7 @@ MainClient::MainClient(QObject *parent) :
 void MainClient::initGui(){
    qDebug() << "initGui";
     emit disableStartStopButton();
+    emit appendText("Click connect to start!");
 }
 
 void MainClient::startDiscovery(const QBluetoothUuid &uuid)
