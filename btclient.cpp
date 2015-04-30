@@ -1,10 +1,14 @@
 #include "btclient.h"
 #include "mainclient.h"
 
+static const int packSize = 33;
+
+
 Btclient::Btclient(QObject *parent)
     :QThread(parent), socket(0)
 {
 
+    bufSize = 27;
     //QObject::connect(socket, SIGNAL(connected()), this, SLOT(readSocket()));
 
 }
@@ -46,6 +50,29 @@ void Btclient::startClient(const QBluetoothServiceInfo &remoteService){
     connect(socket, SIGNAL(disconnected()), this, SLOT(disconnected()));
 }
 
+void Btclient::deserialize(const QByteArray& line){
+        //qDebug() << "Deserialized:" + line.toHex();
+        bufSig = line.mid(0,2);
+        //qDebug() << bufSig.toHex();
+    if(bufSig == QByteArray::fromHex("AAAA")){
+        if(line.size() == packSize){
+            // Remove signature byte and extract bufSize bytes
+            buf = line.mid(2,bufSize);
+            //qDebug() << buf.toHex();
+            emit sendNewSamples(buf);
+        }
+    }
+    else if (bufSig == QByteArray::fromHex("BBBB") ){
+        //qDebug() << "got message";
+            buf = line.mid(2,bufSize);
+        qDebug() << "Received from " + socket->peerName() + ": " + QString::fromUtf8(line.constData(), line.length());
+        QString msg = QString::fromUtf8(buf.constData(), buf.length());
+        msg.remove(QChar('\n'), Qt::CaseInsensitive);
+        emit messageReceived(socket->peerName(),msg);
+    }
+
+}
+
 void Btclient::readSocket()
 {
     if (!socket)
@@ -53,10 +80,7 @@ void Btclient::readSocket()
 
     while (socket->canReadLine()) {
         QByteArray line = socket->readLine();
-        qDebug() << "Received from " + socket->peerName() + ": " + QString::fromUtf8(line.constData(), line.length());
-        QString msg = QString::fromUtf8(line.constData(), line.length());
-        msg.remove(QChar('\n'), Qt::CaseInsensitive);
-        emit messageReceived(socket->peerName(),msg);
+            deserialize(line);
     }
 }
 

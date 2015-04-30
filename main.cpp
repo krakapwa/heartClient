@@ -37,6 +37,8 @@ int main(int argc, char *argv[])
         // a QVariant.
         QObject::connect(&mc, SIGNAL(appendText(QVariant)),
                              window, SLOT(appendText(QVariant)));
+        QObject::connect(&mc, SIGNAL(appendSamples(QVariant)),
+                             window, SLOT(appendSamples(QVariant)));
         QObject::connect(&mc, SIGNAL(disableConnectButton()),
                              window, SLOT(disableConnectButton()));
         QObject::connect(&mc, SIGNAL(enableConnectButton()),

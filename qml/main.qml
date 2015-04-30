@@ -54,6 +54,9 @@ ApplicationWindow {
         }
     }
 
+                function appendSamples(samples){
+                    meter.appendDataPoint(samples)
+                }
         Rectangle {
         id: rectPlot
         visible: true
@@ -83,6 +86,7 @@ ApplicationWindow {
                 }
                 ]
             }
+            /*
 
             Timer {
                 id: timer;
@@ -97,6 +101,7 @@ ApplicationWindow {
                 pos += 0.05;
                 }
             }
+            */
         } //end Rectangle
 
         TextArea {

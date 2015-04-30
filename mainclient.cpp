@@ -13,6 +13,12 @@ void MainClient::initGui(){
    qDebug() << "initGui";
     emit disableStartStopButton();
     emit appendText("Click connect to start!");
+   QByteArray str("72070c");
+   bool ok;
+   int hex = str.toInt(&ok, 16);
+   int dec = str.toInt(&ok, 10);
+   qDebug() << QString::number(hex);
+   qDebug() << QString::number(dec);
 }
 
 void MainClient::startDiscovery(const QBluetoothUuid &uuid)
@@ -67,6 +73,8 @@ void MainClient::serviceDiscovered(const QBluetoothServiceInfo &serviceInfo)
     QObject::connect(client, SIGNAL(disconnectedSig()), this, SLOT(clientDisconnected()));
     QObject::connect(client, SIGNAL(connected(QString)), this, SLOT(clientConnected(QString)));
     QObject::connect(this, SIGNAL(sendMessage(QString)), client, SLOT(sendMessage(QString)));
+    QObject::connect(client, SIGNAL(sendNewSamples(QByteArray)),
+            this, SLOT(newSamplesReceived(QByteArray)));
     client->startClient(service);
     emit disableConnectButton();
     emit enableStartStopButton();
@@ -131,4 +139,14 @@ void MainClient::startStopButtonClicked()
 void MainClient::connectButtonClicked()
 {
     startDiscovery(QBluetoothUuid(serviceUuid));
+}
+
+void MainClient::newSamplesReceived(QByteArray baIn){
+    qDebug() << baIn.mid(9,3).toHex();
+    int s =  baIn.mid(9,3).toHex().toInt(&ok,16);
+    qDebug() << QString::number(s);
+    //short s = baIn.mid(9,11).toHex();
+    //qreal r(s);
+    //qDebug() << QString::number(s);
+    emit appendSamples(s);
 }

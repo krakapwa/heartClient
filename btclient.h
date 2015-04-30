@@ -30,6 +30,7 @@ signals:
     void messageReceived(const QString &sender, const QString &message);
     void connected(const QString &name);
     void disconnectedSig();
+    void sendNewSamples(QByteArray);
 
 public slots:
     void disconnected();
@@ -42,7 +43,9 @@ protected:
     //void run();
 
 private:
-
+    QByteArray buf;
+    QByteArray bufSig; //buffer signature
+    int bufSize;
     QMutex mutex;
     QWaitCondition cond;
     int msgSize;
@@ -50,6 +53,7 @@ private:
     int timeoutSecs;
     bool event;
     QBluetoothSocket *socket;
+    void deserialize(const QByteArray& line);
 
 };
 

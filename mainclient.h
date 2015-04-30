@@ -29,6 +29,7 @@ signals:
     void closeClient();
     void sendMessage(QString);
     void appendText(QVariant text);
+    void appendSamples(QVariant);
     void disableConnectButton();
     void enableConnectButton();
     void disableStartStopButton();
@@ -43,6 +44,7 @@ private slots:
     void toggleConnectButton();
     void clientConnected(const QString &name);
     void clientDisconnected();
+    void newSamplesReceived(QByteArray baIn);
 
 public slots:
    void processMessage(QString);
@@ -55,6 +57,7 @@ private:
     QList<QBluetoothHostInfo> localAdapters;
     QBluetoothServiceDiscoveryAgent *m_discoveryAgent;
     QBluetoothServiceInfo service;
+    bool ok;
 };
 
 #endif // MAINCLIENT_H
