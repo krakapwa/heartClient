@@ -80,13 +80,15 @@ ApplicationWindow {
         ColumnLayout{
             id: myColumnLayout
             Layout.fillWidth: true
+            Layout.fillHeight: true
             width: parent.width*0.95
             height: parent.height*0.95
 
             RowLayout{
                 id:rowLayoutECG
+                Layout.fillWidth: true
                 width: myColumnLayout.width
-                //anchors.top: myColumnLayout.top
+                anchors.top: myColumnLayout.top
                     Text {
                         text: "ECG"
                         anchors.right: plotECG.left
@@ -182,7 +184,7 @@ ApplicationWindow {
                 id:rowLayoutBCGz
                 Layout.fillWidth: true
                 width: myColumnLayout.width
-                anchors.top: rowLayoutBCGz.bottom
+                anchors.top: rowLayoutBCGy.bottom
                     Text {
                         text: "BCGy"
                         anchors.right: plotBCGz.left
@@ -213,7 +215,7 @@ ApplicationWindow {
             TextArea {
                 id: myConsole
                 frameVisible: false
-                anchors.top: plotBCGz.bottom
+                //anchors.top: plotBCGz.bottom
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 //height: parent.height
@@ -225,7 +227,6 @@ ApplicationWindow {
 signal connectClicked()
 signal startStopClicked()
 
-    // this function is our QML slot
     function appendText(text){
         myConsole.append(text)
     }

@@ -47,7 +47,6 @@ int main(int argc, char *argv[])
                              window, SLOT(disableStartStopButton()));
         QObject::connect(&mc, SIGNAL(enableStartStopButton()),
                              window, SLOT(enableStartStopButton()));
-
         mc.initGui();
 
     return app.exec();
