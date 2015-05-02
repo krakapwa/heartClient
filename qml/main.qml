@@ -6,6 +6,7 @@ import QtQuick.Window 2.1
 import QuickPlot 1.0
 
 ApplicationWindow {
+    id:appWindow
     visible: true
     minimumWidth: 640
     minimumHeight: 600
@@ -19,6 +20,7 @@ ApplicationWindow {
     }
 
     menuBar: MenuBar {
+        id:menuBar
         Menu {
             title: "&File"
             MenuItem { action: connectAction }
@@ -34,6 +36,8 @@ ApplicationWindow {
     toolBar: ToolBar {
         id: mainToolBar
         width: parent.width
+        anchors.top: menuBar.bottom
+        anchors.fill: parent
         RowLayout {
             anchors.fill: parent
             spacing: 0
@@ -53,85 +57,158 @@ ApplicationWindow {
     }
 
                 function appendSamples(samples){
-                    myConsole.append("append test");
                     for (var prop in samples) {
-                                //meter.appendDataPoint(samples)
-                                myConsole.append("Label: " + prop+ " = " + samples[prop])
+                        if(prop === "ECG")
+                            {
+                                meterECG.appendDataPoint(samples[prop])
                             }
+                        if(prop === "BCGx")
+                            {
+                                meterBCGx.appendDataPoint(samples[prop])
+                            }
+                        if(prop === "BCGy")
+                            {
+                                meterBCGy.appendDataPoint(samples[prop])
+                            }
+                        if(prop === "BCGz")
+                            {
+                                meterBCGz.appendDataPoint(samples[prop])
+                            }
+                    }
                 }
 
         ColumnLayout{
+            id: myColumnLayout
             Layout.fillWidth: true
-            Layout.fillHeight: true
-            width: parent.width
-            spacing: 2
+            width: parent.width*0.95
+            height: parent.height*0.95
 
-            PlotArea {
-                id: plotECG
-                Layout.fillWidth: true
-                yScaleEngine: TightScaleEngine {
-                max: 1.5
-                min: -1.5
-                }
+            RowLayout{
+                id:rowLayoutECG
+                width: myColumnLayout.width
+                //anchors.top: myColumnLayout.top
+                    Text {
+                        text: "ECG"
+                        anchors.right: plotECG.left
+                        font.family: "Helvetica"
+                        verticalAlignment: Text.AlignVCenter
+                        horizontalAlignment: Text.AlignHCenter
+                        font.pointSize: 12
+                        rotation: -90
+                        //verticalAlignment: Text.AlignVCenter
+                    }
+                    PlotArea {
+                    id: plotECG
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    yScaleEngine: TightScaleEngine {
+                    max: 1.5
+                    min: -1.5
+                    }
 
-                items: [
-                ScrollingCurve {
-                id: meterECG;
-                numPoints: 600
-                }
-                ]
+                    items: [
+                        ScrollingCurve {
+                        id: meterECG;
+                        numPoints: 600
+                        }
+                    ]
+                    }
             }
-            PlotArea {
-                id: plotBCGx
-                anchors.top: plotECG.bottom
+            RowLayout{
+                id:rowLayoutBCGx
                 Layout.fillWidth: true
+                width: myColumnLayout.width
+                anchors.top: rowLayoutECG.bottom
+                    Text {
+                        text: "BCGx"
+                        anchors.right: plotBCGx.left
+                        font.family: "Helvetica"
+                        verticalAlignment: Text.AlignVCenter
+                        horizontalAlignment: Text.AlignHCenter
+                        font.pointSize: 12
+                        rotation: -90
+                        //verticalAlignment: Text.AlignVCenter
+                    }
+                    PlotArea {
+                    id: plotBCGx
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    yScaleEngine: TightScaleEngine {
+                    max: 1.5
+                    min: -1.5
+                    }
 
-                yScaleEngine: TightScaleEngine {
-                max: 1.5
-                min: -1.5
-                }
-
-                items: [
-                ScrollingCurve {
-                id: meterBCGx;
-                numPoints: 600
-                }
-                ]
+                    items: [
+                        ScrollingCurve {
+                        id: meterBCGx;
+                        numPoints: 600
+                        }
+                    ]
+                    }
             }
-            PlotArea {
-                id: plotBCGy
-                anchors.top: plotBCGx.bottom
+            RowLayout{
+                id:rowLayoutBCGy
                 Layout.fillWidth: true
+                width: myColumnLayout.width
+                anchors.top: rowLayoutBCGx.bottom
+                    Text {
+                        text: "BCGy"
+                        anchors.right: plotBCGy.left
+                        font.family: "Helvetica"
+                        verticalAlignment: Text.AlignVCenter
+                        horizontalAlignment: Text.AlignHCenter
+                        font.pointSize: 12
+                        rotation: -90
+                        //verticalAlignment: Text.AlignVCenter
+                    }
+                    PlotArea {
+                    id: plotBCGy
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    yScaleEngine: TightScaleEngine {
+                    max: 1.5
+                    min: -1.5
+                    }
 
-                yScaleEngine: TightScaleEngine {
-                max: 1.5
-                min: -1.5
-                }
-
-                items: [
-                ScrollingCurve {
-                id: meterBCGy;
-                numPoints: 600
-                }
-                ]
+                    items: [
+                        ScrollingCurve {
+                        id: meterBCGy;
+                        numPoints: 600
+                        }
+                    ]
+                    }
             }
-            PlotArea {
-                id: plotBCGz
-                anchors.top: plotBCGy.bottom
+            RowLayout{
+                id:rowLayoutBCGz
                 Layout.fillWidth: true
-                Layout.fillHeight: true
+                width: myColumnLayout.width
+                anchors.top: rowLayoutBCGz.bottom
+                    Text {
+                        text: "BCGy"
+                        anchors.right: plotBCGz.left
+                        font.family: "Helvetica"
+                        verticalAlignment: Text.AlignVCenter
+                        horizontalAlignment: Text.AlignHCenter
+                        font.pointSize: 12
+                        rotation: -90
+                        //verticalAlignment: Text.AlignVCenter
+                    }
+                    PlotArea {
+                    id: plotBCGz
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    yScaleEngine: TightScaleEngine {
+                    max: 1.5
+                    min: -1.5
+                    }
 
-                yScaleEngine: TightScaleEngine {
-                max: 1.5
-                min: -1.5
-                }
-
-                items: [
-                ScrollingCurve {
-                id: meterBCGz;
-                numPoints: 600
-                }
-                ]
+                    items: [
+                        ScrollingCurve {
+                        id: meterBCGz;
+                        numPoints: 600
+                        }
+                    ]
+                    }
             }
             TextArea {
                 id: myConsole

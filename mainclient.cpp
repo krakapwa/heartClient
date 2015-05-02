@@ -142,7 +142,7 @@ void MainClient::newSamplesReceived(QByteArray baIn){
     int s;
     //ECG
     s =  baIn.mid(2,3).toHex().toInt(&ok,16);
-    map.insert("BCGx", s);
+    map.insert("ECG", s);
     //BCGx
     s =  baIn.mid(12,3).toHex().toInt(&ok,16);
     map.insert("BCGx", s);
