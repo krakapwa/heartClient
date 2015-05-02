@@ -58,6 +58,8 @@ private:
     QBluetoothServiceDiscoveryAgent *m_discoveryAgent;
     QBluetoothServiceInfo service;
     bool ok;
+    QVariantMap dataToPlot;
+    int tmp;
 };
 
 #endif // MAINCLIENT_H

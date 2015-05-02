@@ -6,19 +6,15 @@ static const QLatin1String remoteAddress("00:02:72:C9:1B:25");
 MainClient::MainClient(QObject *parent) :
     QObject(parent)
 {
-
 }
 
 void MainClient::initGui(){
    qDebug() << "initGui";
     emit disableStartStopButton();
     emit appendText("Click connect to start!");
-   QByteArray str("72070c");
-   bool ok;
-   int hex = str.toInt(&ok, 16);
-   int dec = str.toInt(&ok, 10);
-   qDebug() << QString::number(hex);
-   qDebug() << QString::number(dec);
+    QByteArray q;
+    q = QByteArray::fromHex("0x00000011111122222233333333444444555555666666777777888888");
+    newSamplesReceived(q);
 }
 
 void MainClient::startDiscovery(const QBluetoothUuid &uuid)
@@ -142,11 +138,23 @@ void MainClient::connectButtonClicked()
 }
 
 void MainClient::newSamplesReceived(QByteArray baIn){
-    qDebug() << baIn.mid(9,3).toHex();
-    int s =  baIn.mid(9,3).toHex().toInt(&ok,16);
-    qDebug() << QString::number(s);
+    QVariantMap map;
+    int s;
+    //ECG
+    s =  baIn.mid(2,3).toHex().toInt(&ok,16);
+    map.insert("BCGx", s);
+    //BCGx
+    s =  baIn.mid(12,3).toHex().toInt(&ok,16);
+    map.insert("BCGx", s);
+    //BCGy
+    s =  baIn.mid(9,3).toHex().toInt(&ok,16);
+    map.insert("BCGy", s);
+    //BCGz
+    s =  baIn.mid(15,3).toHex().toInt(&ok,16);
+    map.insert("BCGz", s);
+    //qDebug() << QString::number(s);
     //short s = baIn.mid(9,11).toHex();
     //qreal r(s);
     //qDebug() << QString::number(s);
-    emit appendSamples(s);
+    emit appendSamples(map);
 }

@@ -7,8 +7,6 @@ import QuickPlot 1.0
 
 ApplicationWindow {
     visible: true
-    width: 640
-    height: 480
     minimumWidth: 640
     minimumHeight: 600
     title: "heartClient"
@@ -55,24 +53,38 @@ ApplicationWindow {
     }
 
                 function appendSamples(samples){
-                    meter.appendDataPoint(samples)
+                    myConsole.append("append test");
+                    for (var prop in samples) {
+                                //meter.appendDataPoint(samples)
+                                myConsole.append("Label: " + prop+ " = " + samples[prop])
+                            }
                 }
-        Rectangle {
-        id: rectPlot
-        visible: true
-        width: parent.width
-        height: 480
 
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                Qt.quit();
-                }
-            }
+        ColumnLayout{
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            width: parent.width
+            spacing: 2
 
             PlotArea {
-                id: plotArea
-                anchors.fill: parent
+                id: plotECG
+                Layout.fillWidth: true
+                yScaleEngine: TightScaleEngine {
+                max: 1.5
+                min: -1.5
+                }
+
+                items: [
+                ScrollingCurve {
+                id: meterECG;
+                numPoints: 600
+                }
+                ]
+            }
+            PlotArea {
+                id: plotBCGx
+                anchors.top: plotECG.bottom
+                Layout.fillWidth: true
 
                 yScaleEngine: TightScaleEngine {
                 max: 1.5
@@ -81,36 +93,56 @@ ApplicationWindow {
 
                 items: [
                 ScrollingCurve {
-                id: meter;
-                numPoints: 300
+                id: meterBCGx;
+                numPoints: 600
                 }
                 ]
             }
-            /*
+            PlotArea {
+                id: plotBCGy
+                anchors.top: plotBCGx.bottom
+                Layout.fillWidth: true
 
-            Timer {
-                id: timer;
-                interval: 20;
-                repeat: true;
-                running: true;
-
-                property real pos: 0
-
-                onTriggered: {
-                meter.appendDataPoint( Math.sin(pos) );
-                pos += 0.05;
+                yScaleEngine: TightScaleEngine {
+                max: 1.5
+                min: -1.5
                 }
-            }
-            */
-        } //end Rectangle
 
-        TextArea {
-            id: myConsole
-            frameVisible: false
-            anchors.top: rectPlot.bottom
-            width: parent.width
-            //height: parent.height
+                items: [
+                ScrollingCurve {
+                id: meterBCGy;
+                numPoints: 600
+                }
+                ]
+            }
+            PlotArea {
+                id: plotBCGz
+                anchors.top: plotBCGy.bottom
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+
+                yScaleEngine: TightScaleEngine {
+                max: 1.5
+                min: -1.5
+                }
+
+                items: [
+                ScrollingCurve {
+                id: meterBCGz;
+                numPoints: 600
+                }
+                ]
+            }
+            TextArea {
+                id: myConsole
+                frameVisible: false
+                anchors.top: plotBCGz.bottom
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                //height: parent.height
+            }
         }
+
 
 
 signal connectClicked()
