@@ -64,7 +64,7 @@ void Btclient::deserialize(const QByteArray& line){
     }
     else if (bufSig == QByteArray::fromHex("BBBB") ){
         //qDebug() << "got message";
-            buf = line.mid(2,bufSize);
+        buf = line.mid(2,bufSize);
         qDebug() << "Received from " + socket->peerName() + ": " + QString::fromUtf8(line.constData(), line.length());
         QString msg = QString::fromUtf8(buf.constData(), buf.length());
         msg.remove(QChar('\n'), Qt::CaseInsensitive);

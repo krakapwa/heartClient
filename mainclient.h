@@ -9,6 +9,8 @@
 #include <qbluetoothhostinfo.h>
 #include <qbluetoothservicediscoveryagent.h>
 #include <QBluetoothLocalDevice>
+#include <boost/circular_buffer.hpp>
+#include <QBitArray>
 
 namespace Ui {
 class MainClient;
@@ -60,6 +62,11 @@ private:
     bool ok;
     QVariantMap dataToPlot;
     int tmp;
+    int bufSize;
+    boost::circular_buffer<int> ecg;
+    boost::circular_buffer<int> bcgx;
+    boost::circular_buffer<int> bcgy;
+    boost::circular_buffer<int> bcgz;
 };
 
 #endif // MAINCLIENT_H

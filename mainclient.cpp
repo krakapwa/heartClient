@@ -6,22 +6,69 @@ static const QLatin1String remoteAddress("00:02:72:C9:1B:25");
 MainClient::MainClient(QObject *parent) :
     QObject(parent)
 {
+    bufSize = 5;
+    ecg = boost::circular_buffer<int>(bufSize);
+    bcgx = boost::circular_buffer<int>(bufSize);
+    bcgy = boost::circular_buffer<int>(bufSize);
+    bcgz = boost::circular_buffer<int>(bufSize);
+
+    //fill buffers with zeros
+    /*
+    for(int i=0; i<bufSize;++i){
+        ecg.push_back(0);
+        bcgx.push_back(0);
+        bcgy.push_back(0);
+        bcgz.push_back(0);
+    }
+    */
+
+}
+
+int getSign(QByteArray q){
+
+    QBitArray leftbit(1);
+    QByteArray leftbyte = q.left(1);
+
+    //qDebug() << "bits";
+
+    leftbit.setBit(0,leftbyte.at(0)&(1<<7));
+    //qDebug() << "bit " + QString::number(leftbit.testBit(0));
+
+   if(leftbit.testBit(0)) return -1;
+   else return 1;
+
 }
 
 void MainClient::initGui(){
-   qDebug() << "initGui";
+    qDebug() << "initGui";
     emit disableStartStopButton();
     emit appendText("Click connect to start!");
+
+    /*
+    unsigned char tmp = 0xFFFFFF;
+    int t;
+    bool ok;
     QByteArray q;
-    q = QByteArray::fromHex("0x00000011111122222233333333444444555555666666777777888888");
-    newSamplesReceived(q);
+    QByteArray MSB;
+
+    q = QByteArray::fromHex("7FFFFF");
+    t = q.toHex().toUInt(&ok,16)*getSign(q);
+    qDebug() << "t= " + QString::number(t);
+
+    q= QByteArray::fromHex("000000");
+    t = q.toHex().toUInt(&ok,16)*getSign(q);
+    qDebug() << "t= " + QString::number(t);
+
+    q= QByteArray::fromHex("800000");
+    t = q.toHex().toUInt(&ok,16)*getSign(q);
+    qDebug() << "t= " + QString::number(t);
+    */
 }
 
 void MainClient::startDiscovery(const QBluetoothUuid &uuid)
 {
 
     //ui->connectButton->setEnabled(false);
-
     const QBluetoothAddress adapter = localAdapters.isEmpty() ?
                                            QBluetoothAddress() :
                                            localAdapters.at(0).address();
@@ -138,23 +185,39 @@ void MainClient::connectButtonClicked()
 }
 
 void MainClient::newSamplesReceived(QByteArray baIn){
+    //Calculate numerical values and apply moving average. Window size = bufSize
     QVariantMap map;
     int s;
-    //ECG
-    s =  baIn.mid(2,3).toHex().toInt(&ok,16);
-    map.insert("ECG", s);
+    QByteArray q;
+    //Header is first set of 3 bytes
+    //ECG (RA-LA)
+    q =  baIn.mid(6,3);
+    s =  q.toHex().toUInt(&ok,16);
+    s = s*getSign(q);
+    ecg.push_back(s);
+    map.insert("ECG", std::accumulate(ecg.begin(), ecg.end(), 0)/bufSize);
+    //map.insert("ECG", s);
     //BCGx
-    s =  baIn.mid(12,3).toHex().toInt(&ok,16);
-    map.insert("BCGx", s);
+    q =  baIn.mid(12,3);
+    s =  q.toHex().toUInt(&ok,16);
+    s = s*getSign(q);
+    bcgx.push_back(s);
+    map.insert("BCGx", std::accumulate(bcgx.begin(), bcgx.end(), 0)/bufSize);
+    //map.insert("BCGx", s);
     //BCGy
-    s =  baIn.mid(9,3).toHex().toInt(&ok,16);
-    map.insert("BCGy", s);
+    q =  baIn.mid(15,3);
+    s =  q.toHex().toUInt(&ok,16);
+    s = s*getSign(q);
+    bcgy.push_back(s);
+    map.insert("BCGy", std::accumulate(bcgy.begin(), bcgy.end(), 0)/bufSize);
+    //map.insert("BCGy", s);
     //BCGz
-    s =  baIn.mid(15,3).toHex().toInt(&ok,16);
-    map.insert("BCGz", s);
-    //qDebug() << QString::number(s);
-    //short s = baIn.mid(9,11).toHex();
-    //qreal r(s);
-    //qDebug() << QString::number(s);
+    q =  baIn.mid(18,3);
+    s =  q.toHex().toUInt(&ok,16);
+    s = s*getSign(q);
+    bcgz.push_back(s);
+    map.insert("BCGz", std::accumulate(bcgz.begin(), bcgz.end(), 0)/bufSize);
+    //map.insert("BCGz", s);
+
     emit appendSamples(map);
 }

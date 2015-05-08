@@ -103,6 +103,7 @@ ApplicationWindow {
                     id: plotECG
                     Layout.fillWidth: true
                     Layout.fillHeight: true
+                    hasYTicks: false
                     yScaleEngine: TightScaleEngine {
                     max: 1.5
                     min: -1.5
@@ -135,6 +136,7 @@ ApplicationWindow {
                     id: plotBCGx
                     Layout.fillWidth: true
                     Layout.fillHeight: true
+                    hasYTicks: false
                     yScaleEngine: TightScaleEngine {
                     max: 1.5
                     min: -1.5
@@ -167,6 +169,7 @@ ApplicationWindow {
                     id: plotBCGy
                     Layout.fillWidth: true
                     Layout.fillHeight: true
+                    hasYTicks: false
                     yScaleEngine: TightScaleEngine {
                     max: 1.5
                     min: -1.5
@@ -199,6 +202,7 @@ ApplicationWindow {
                     id: plotBCGz
                     Layout.fillWidth: true
                     Layout.fillHeight: true
+                    hasYTicks: false
                     yScaleEngine: TightScaleEngine {
                     max: 1.5
                     min: -1.5
