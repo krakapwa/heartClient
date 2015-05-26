@@ -27,6 +27,7 @@ public:
     void initGui();
 signals:
     void startClicked();
+    void syncClicked();
     void connectClicked();
     void closeClient();
     void sendMessage(QString);
@@ -40,6 +41,7 @@ private slots:
 
     void serviceDiscovered(const QBluetoothServiceInfo &serviceInfo);
     void startStopButtonClicked();
+    void syncButtonClicked();
     void connectButtonClicked();
     void toggleStartButton();
     void showMessage(const QString &sender, const QString &message);
@@ -56,6 +58,7 @@ private:
    Btclient client ;
     void closeEvent(QCloseEvent*);
     void connectToServer();
+    void noAdapters();
     QList<QBluetoothHostInfo> localAdapters;
     QBluetoothServiceDiscoveryAgent *m_discoveryAgent;
     QBluetoothServiceInfo service;

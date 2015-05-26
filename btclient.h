@@ -37,6 +37,7 @@ public slots:
     void connected();
     void readSocket();
     void toggleStartStop();
+    void sendSync();
     void sendMessage(const QString &message);
 
 protected:

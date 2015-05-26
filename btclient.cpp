@@ -90,6 +90,10 @@ void Btclient::toggleStartStop(){
     sendMessage("startStop " + currentTime.toString("dd-MM-yyyy_hh-mm-ss"));
 }
 
+void Btclient::sendSync(){
+    sendMessage("sync");
+}
+
 void Btclient::connected()
 {
     emit connected(socket->peerName());

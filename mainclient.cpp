@@ -65,25 +65,33 @@ void MainClient::initGui(){
     */
 }
 
+void MainClient::noAdapters(){
+
+    emit appendText("No Bluetooth adapters were found. Check that Bluetooth service is active in your devices settings.");
+}
+
 void MainClient::startDiscovery(const QBluetoothUuid &uuid)
 {
 
     //ui->connectButton->setEnabled(false);
-    const QBluetoothAddress adapter = localAdapters.isEmpty() ?
-                                           QBluetoothAddress() :
-                                           localAdapters.at(0).address();
-    m_discoveryAgent = new QBluetoothServiceDiscoveryAgent(adapter);
-    connect(m_discoveryAgent, SIGNAL(serviceDiscovered(QBluetoothServiceInfo)),
-            this, SLOT(serviceDiscovered(QBluetoothServiceInfo)));
+    const QBluetoothAddress adapter;
+    if(localAdapters.isEmpty()) noAdapters();
+    else{
 
-    //ui->console->appendPlainText("Scanning...\n");
-    if (m_discoveryAgent->isActive())
-        m_discoveryAgent->stop();
+        localAdapters.at(0).address();
+    }
+        m_discoveryAgent = new QBluetoothServiceDiscoveryAgent(adapter);
+        connect(m_discoveryAgent, SIGNAL(serviceDiscovered(QBluetoothServiceInfo)),
+                this, SLOT(serviceDiscovered(QBluetoothServiceInfo)));
 
-    m_discoveryAgent->setUuidFilter(uuid);
-    m_discoveryAgent->setRemoteAddress(QBluetoothAddress(remoteAddress));
-    emit appendText("Scanning...");
-    m_discoveryAgent->start(QBluetoothServiceDiscoveryAgent::FullDiscovery);
+        //ui->console->appendPlainText("Scanning...\n");
+        if (m_discoveryAgent->isActive())
+            m_discoveryAgent->stop();
+
+        m_discoveryAgent->setUuidFilter(uuid);
+        m_discoveryAgent->setRemoteAddress(QBluetoothAddress(remoteAddress));
+        emit appendText("Scanning...");
+        m_discoveryAgent->start(QBluetoothServiceDiscoveryAgent::FullDiscovery);
 
 }
 
@@ -109,6 +117,8 @@ void MainClient::serviceDiscovered(const QBluetoothServiceInfo &serviceInfo)
     Btclient* client = new Btclient();
     QObject::connect(this, SIGNAL(startClicked()),
             client, SLOT(toggleStartStop()));
+    QObject::connect(this, SIGNAL(syncClicked()),
+            client, SLOT(sendSync()));
     qDebug() << "Connecting...";
 
     QObject::connect(client, SIGNAL(messageReceived(QString,QString)),
@@ -179,6 +189,10 @@ void MainClient::startStopButtonClicked()
     emit startClicked();
 }
 
+void MainClient::syncButtonClicked()
+{
+    emit syncClicked();
+}
 void MainClient::connectButtonClicked()
 {
     startDiscovery(QBluetoothUuid(serviceUuid));

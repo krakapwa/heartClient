@@ -32,6 +32,8 @@ int main(int argc, char *argv[])
                              &mc, SLOT(connectButtonClicked()));
         QObject::connect(window, SIGNAL(startStopClicked()),
                              &mc, SLOT(startStopButtonClicked()));
+        QObject::connect(window, SIGNAL(syncClicked()),
+                             &mc, SLOT(syncButtonClicked()));
         // connect our C++ signal to our QML slot
         // NOTE: if we want to pass an parameter to our QML slot, it has to be
         // a QVariant.

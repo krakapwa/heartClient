@@ -50,7 +50,11 @@ ApplicationWindow {
                 id: startStopTool
                 action: startStopAction
             }
-
+            ToolbarSeparator{}
+            ToolButton {
+                id: syncTool
+                action: syncAction
+            }
 
             Item { Layout.fillWidth: true }
         }
@@ -79,157 +83,130 @@ ApplicationWindow {
 
         ColumnLayout{
             id: myColumnLayout
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            width: parent.width*0.95
-            height: parent.height*0.95
+            //Layout.fillWidth: true
+            //Layout.fillHeight: true
+            anchors.fill: parent
+            anchors.margins: 5
 
-            RowLayout{
-                id:rowLayoutECG
-                Layout.fillWidth: true
-                width: myColumnLayout.width
-                anchors.top: myColumnLayout.top
-                    Text {
-                        text: "ECG"
-                        anchors.right: plotECG.left
-                        font.family: "Helvetica"
-                        verticalAlignment: Text.AlignVCenter
-                        horizontalAlignment: Text.AlignHCenter
-                        font.pointSize: 12
-                        rotation: -90
-                        //verticalAlignment: Text.AlignVCenter
-                    }
                     PlotArea {
                     id: plotECG
                     Layout.fillWidth: true
                     Layout.fillHeight: true
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    hasXTicks: false
                     hasYTicks: false
                     yScaleEngine: TightScaleEngine {
-                    max: 1.5
-                    min: -1.5
                     }
 
                     items: [
                         ScrollingCurve {
-                        id: meterECG;
+                        id: meterECG
                         numPoints: 600
                         }
                     ]
                     }
-            }
-            RowLayout{
-                id:rowLayoutBCGx
-                Layout.fillWidth: true
-                width: myColumnLayout.width
-                anchors.top: rowLayoutECG.bottom
                     Text {
-                        text: "BCGx"
-                        anchors.right: plotBCGx.left
+                        text: "ECG"
+                        id: ecgText
                         font.family: "Helvetica"
+                        anchors.verticalCenter: plotECG.verticalCenter
                         verticalAlignment: Text.AlignVCenter
-                        horizontalAlignment: Text.AlignHCenter
                         font.pointSize: 12
-                        rotation: -90
-                        //verticalAlignment: Text.AlignVCenter
                     }
                     PlotArea {
                     id: plotBCGx
                     Layout.fillWidth: true
                     Layout.fillHeight: true
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: plotECG.bottom
+                    hasXTicks: false
                     hasYTicks: false
                     yScaleEngine: TightScaleEngine {
-                    max: 1.5
-                    min: -1.5
                     }
 
                     items: [
                         ScrollingCurve {
-                        id: meterBCGx;
+                        id: meterBCGx
                         numPoints: 600
                         }
                     ]
                     }
-            }
-            RowLayout{
-                id:rowLayoutBCGy
-                Layout.fillWidth: true
-                width: myColumnLayout.width
-                anchors.top: rowLayoutBCGx.bottom
                     Text {
-                        text: "BCGy"
-                        anchors.right: plotBCGy.left
+                        text: "BCGx"
+                        id: bcgxText
                         font.family: "Helvetica"
+                        anchors.verticalCenter: plotBCGx.verticalCenter
                         verticalAlignment: Text.AlignVCenter
-                        horizontalAlignment: Text.AlignHCenter
                         font.pointSize: 12
-                        rotation: -90
-                        //verticalAlignment: Text.AlignVCenter
                     }
                     PlotArea {
                     id: plotBCGy
                     Layout.fillWidth: true
                     Layout.fillHeight: true
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: plotBCGx.bottom
+                    hasXTicks: false
                     hasYTicks: false
                     yScaleEngine: TightScaleEngine {
-                    max: 1.5
-                    min: -1.5
                     }
 
                     items: [
                         ScrollingCurve {
-                        id: meterBCGy;
+                        id: meterBCGy
                         numPoints: 600
                         }
                     ]
                     }
-            }
-            RowLayout{
-                id:rowLayoutBCGz
-                Layout.fillWidth: true
-                width: myColumnLayout.width
-                anchors.top: rowLayoutBCGy.bottom
                     Text {
                         text: "BCGy"
-                        anchors.right: plotBCGz.left
+                        id: bcgyText
                         font.family: "Helvetica"
+                        anchors.verticalCenter: plotBCGy.verticalCenter
                         verticalAlignment: Text.AlignVCenter
-                        horizontalAlignment: Text.AlignHCenter
                         font.pointSize: 12
-                        rotation: -90
-                        //verticalAlignment: Text.AlignVCenter
                     }
                     PlotArea {
                     id: plotBCGz
                     Layout.fillWidth: true
                     Layout.fillHeight: true
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: plotBCGy.bottom
+                    hasXTicks: false
                     hasYTicks: false
                     yScaleEngine: TightScaleEngine {
-                    max: 1.5
-                    min: -1.5
                     }
 
                     items: [
                         ScrollingCurve {
-                        id: meterBCGz;
+                        id: meterBCGz
                         numPoints: 600
                         }
                     ]
                     }
-            }
-            TextArea {
-                id: myConsole
-                frameVisible: false
-                //anchors.top: plotBCGz.bottom
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                //height: parent.height
-            }
+                    Text {
+                        text: "BCGz"
+                        id: bcgzText
+                        font.family: "Helvetica"
+                        anchors.verticalCenter: plotBCGz.verticalCenter
+                        verticalAlignment: Text.AlignVCenter
+                        font.pointSize: 12
+                    }
+                    TextArea {
+                        id: myConsole
+                        frameVisible: true
+                        anchors.top: plotBCGz.bottom
+                        anchors.bottom: parent.bottom
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        //height: parent.height
+                    }
         }
 
 
 
 signal connectClicked()
 signal startStopClicked()
+signal syncClicked()
 
     function appendText(text){
         myConsole.append(text)
@@ -267,6 +244,13 @@ signal startStopClicked()
         //iconSource: "images/textjustify.png"
         //iconName: "edit-copy"
         onTriggered: startStopClicked()
+    }
+    Action {
+        id: syncAction
+        text: "sync data"
+        //iconSource: "images/textjustify.png"
+        //iconName: "edit-copy"
+        onTriggered: syncClicked()
     }
 
 }
