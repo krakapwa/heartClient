@@ -75,8 +75,9 @@ void Btclient::deserialize(const QByteArray& line){
 
 void Btclient::readSocket()
 {
-    if (!socket)
+/*    if (!socket)
         return;
+        */
 
     while (socket->canReadLine()) {
         QByteArray line = socket->readLine();

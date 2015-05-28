@@ -11,6 +11,7 @@
 #include <QBluetoothLocalDevice>
 #include <boost/circular_buffer.hpp>
 #include <QBitArray>
+#include <firfilt.h>
 
 namespace Ui {
 class MainClient;
@@ -70,6 +71,9 @@ private:
     boost::circular_buffer<int> bcgx;
     boost::circular_buffer<int> bcgy;
     boost::circular_buffer<int> bcgz;
+    FirFilt * tapFilt;
 };
+
+
 
 #endif // MAINCLIENT_H

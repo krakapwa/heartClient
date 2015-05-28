@@ -18,7 +18,8 @@ SOURCES += main.cpp\
     qpscaleengine.cpp \
     qpplotitem.cpp \
     qpfixedscaleengine.cpp \
-    qpcurve.cpp
+    qpcurve.cpp \
+    firfilt.cpp
 
 HEADERS  += mainclient.h \
     btclient.h \
@@ -30,7 +31,8 @@ HEADERS  += mainclient.h \
     qpplotitem.h \
     qpfixedscaleengine.h \
     qpcurve.h \
-    boost/circular_buffer.hpp
+    boost/circular_buffer.hpp \
+    firfilt.h
 
 OTHER_FILES += \
     qml/main.qml \

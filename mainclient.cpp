@@ -6,21 +6,15 @@ static const QLatin1String remoteAddress("00:02:72:C9:1B:25");
 MainClient::MainClient(QObject *parent) :
     QObject(parent)
 {
-    bufSize = 5;
+
+    //tap filter
+    tapFilt = new FirFilt(filter_taps,FILTER_TAP_NUM);
+
+    bufSize = FILTER_TAP_NUM;
     ecg = boost::circular_buffer<int>(bufSize);
     bcgx = boost::circular_buffer<int>(bufSize);
     bcgy = boost::circular_buffer<int>(bufSize);
     bcgz = boost::circular_buffer<int>(bufSize);
-
-    //fill buffers with zeros
-    /*
-    for(int i=0; i<bufSize;++i){
-        ecg.push_back(0);
-        bcgx.push_back(0);
-        bcgy.push_back(0);
-        bcgz.push_back(0);
-    }
-    */
 
 }
 
@@ -198,6 +192,15 @@ void MainClient::connectButtonClicked()
     startDiscovery(QBluetoothUuid(serviceUuid));
 }
 
+/*
+int MainClient::buttFilt(boost::circular_buffer<int> s, myFilt filt){
+
+    y[n] = b[0] * x[n] + b[1] * x[(n-1+m)%m] + b[2] * x[(n-2+m)%m] + b[3] * x[(n-3+m)%m]
+               - a[1] * y[(n-1+m)%m] - a[2] * y[(n-2+m)%m] - a[3] * y[(n-3+m)%m];
+}
+*/
+
+
 void MainClient::newSamplesReceived(QByteArray baIn){
     //Calculate numerical values and apply moving average. Window size = bufSize
     QVariantMap map;
@@ -209,29 +212,31 @@ void MainClient::newSamplesReceived(QByteArray baIn){
     s =  q.toHex().toUInt(&ok,16);
     s = s*getSign(q);
     ecg.push_back(s);
-    map.insert("ECG", std::accumulate(ecg.begin(), ecg.end(), 0)/bufSize);
+    //map.insert("ECG", std::accumulate(ecg.begin(), ecg.end(), 0)/bufSize);
+    map.insert("ECG", tapFilt->applyFilt(ecg));
     //map.insert("ECG", s);
     //BCGx
     q =  baIn.mid(12,3);
     s =  q.toHex().toUInt(&ok,16);
     s = s*getSign(q);
     bcgx.push_back(s);
-    map.insert("BCGx", std::accumulate(bcgx.begin(), bcgx.end(), 0)/bufSize);
+    map.insert("BCGx", tapFilt->applyFilt(bcgx));
     //map.insert("BCGx", s);
     //BCGy
     q =  baIn.mid(15,3);
     s =  q.toHex().toUInt(&ok,16);
     s = s*getSign(q);
     bcgy.push_back(s);
-    map.insert("BCGy", std::accumulate(bcgy.begin(), bcgy.end(), 0)/bufSize);
+    map.insert("BCGy", tapFilt->applyFilt(bcgy));
     //map.insert("BCGy", s);
     //BCGz
     q =  baIn.mid(18,3);
     s =  q.toHex().toUInt(&ok,16);
     s = s*getSign(q);
     bcgz.push_back(s);
-    map.insert("BCGz", std::accumulate(bcgz.begin(), bcgz.end(), 0)/bufSize);
+    map.insert("BCGz", tapFilt->applyFilt(bcgz));
     //map.insert("BCGz", s);
+
 
     emit appendSamples(map);
 }
