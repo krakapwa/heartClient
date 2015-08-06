@@ -30,7 +30,7 @@ signals:
     void messageReceived(const QString &sender, const QString &message);
     void connected(const QString &name);
     void disconnectedSig();
-    void sendNewSamples(QByteArray);
+    void sendNewSamples(std::string);
 
 public slots:
     void disconnected();

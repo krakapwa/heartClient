@@ -10,8 +10,13 @@
 #include <qbluetoothservicediscoveryagent.h>
 #include <QBluetoothLocalDevice>
 #include <boost/circular_buffer.hpp>
+#include <boost/tokenizer.hpp>
+#include <boost/lexical_cast.hpp>
 #include <QBitArray>
 #include <firfilt.h>
+#include <iterator>
+#include <algorithm>
+#include <iostream>
 
 namespace Ui {
 class MainClient;
@@ -49,7 +54,7 @@ private slots:
     void toggleConnectButton();
     void clientConnected(const QString &name);
     void clientDisconnected();
-    void newSamplesReceived(QByteArray baIn);
+    void newSamplesReceived(std::string strIn);
 
 public slots:
    void processMessage(QString);
@@ -71,6 +76,9 @@ private:
     boost::circular_buffer<int> bcgx;
     boost::circular_buffer<int> bcgy;
     boost::circular_buffer<int> bcgz;
+    boost::circular_buffer<int> bcgx2;
+    boost::circular_buffer<int> bcgy2;
+    boost::circular_buffer<int> bcgz2;
     FirFilt * tapFilt;
 };
 

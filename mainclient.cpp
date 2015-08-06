@@ -1,7 +1,8 @@
 #include "mainclient.h"
 
 static const QLatin1String serviceUuid("e8e10f95-1a70-4b27-9ccf-02010264e9c7");
-static const QLatin1String remoteAddress("00:02:72:C9:1B:25");
+//static const QLatin1String remoteAddress("00:02:72:C9:1B:25");
+//static const QLatin1String remoteAddress("5C:F3:70:68:08:35");
 
 MainClient::MainClient(QObject *parent) :
     QObject(parent)
@@ -15,6 +16,9 @@ MainClient::MainClient(QObject *parent) :
     bcgx = boost::circular_buffer<int>(bufSize);
     bcgy = boost::circular_buffer<int>(bufSize);
     bcgz = boost::circular_buffer<int>(bufSize);
+    bcgx2 = boost::circular_buffer<int>(bufSize);
+    bcgy2 = boost::circular_buffer<int>(bufSize);
+    bcgz2 = boost::circular_buffer<int>(bufSize);
 
 }
 
@@ -57,11 +61,27 @@ void MainClient::initGui(){
     t = q.toHex().toUInt(&ok,16)*getSign(q);
     qDebug() << "t= " + QString::number(t);
     */
+    std::string line("1,2,-2,");
+    std::vector<int> vec;
+    using namespace boost;
+    tokenizer<escaped_list_separator<char> > tk(
+                            line, escaped_list_separator<char>('\\', ',', '\"'));
+    for (tokenizer<escaped_list_separator<char> >::iterator i(tk.begin());
+         i!=tk.end();++i)
+    {
+        try   {
+            vec.push_back(boost::lexical_cast<int>( *i ));
+        }
+        catch( boost::bad_lexical_cast & e ){
+            //qDebug() << "Exception caught : " + QString::fromStdString(e.what());
+        }
+    }
+
 }
 
 void MainClient::noAdapters(){
 
-    emit appendText("No Bluetooth adapters were found. Check that Bluetooth service is active in your devices settings.");
+    //emit appendText("No Bluetooth adapters were found. Check that Bluetooth service is active in your devices settings.");
 }
 
 void MainClient::startDiscovery(const QBluetoothUuid &uuid)
@@ -83,7 +103,7 @@ void MainClient::startDiscovery(const QBluetoothUuid &uuid)
             m_discoveryAgent->stop();
 
         m_discoveryAgent->setUuidFilter(uuid);
-        m_discoveryAgent->setRemoteAddress(QBluetoothAddress(remoteAddress));
+        //m_discoveryAgent->setRemoteAddress(QBluetoothAddress(remoteAddress));
         emit appendText("Scanning...");
         m_discoveryAgent->start(QBluetoothServiceDiscoveryAgent::FullDiscovery);
 
@@ -120,8 +140,8 @@ void MainClient::serviceDiscovered(const QBluetoothServiceInfo &serviceInfo)
     QObject::connect(client, SIGNAL(disconnectedSig()), this, SLOT(clientDisconnected()));
     QObject::connect(client, SIGNAL(connected(QString)), this, SLOT(clientConnected(QString)));
     QObject::connect(this, SIGNAL(sendMessage(QString)), client, SLOT(sendMessage(QString)));
-    QObject::connect(client, SIGNAL(sendNewSamples(QByteArray)),
-            this, SLOT(newSamplesReceived(QByteArray)));
+    QObject::connect(client, SIGNAL(sendNewSamples(std::string)),
+            this, SLOT(newSamplesReceived(std::string)));
     client->startClient(service);
     emit disableConnectButton();
     emit enableStartStopButton();
@@ -201,42 +221,52 @@ int MainClient::buttFilt(boost::circular_buffer<int> s, myFilt filt){
 */
 
 
-void MainClient::newSamplesReceived(QByteArray baIn){
+void MainClient::newSamplesReceived(std::string strIn){
+
+    //qDebug() << strIn.c_str();
+
+    std::vector<int> intIn;
+
+    using namespace boost;
+    tokenizer<escaped_list_separator<char> > tk(
+                            strIn, escaped_list_separator<char>('\\', ',', '\"'));
+    for (tokenizer<escaped_list_separator<char> >::iterator i(tk.begin());
+         i!=tk.end();++i)
+    {
+        try   {
+            intIn.push_back(boost::lexical_cast<int>( *i ));
+        }
+        catch( boost::bad_lexical_cast & e ){
+            //qDebug() << "Exception caught : " + QString::fromStdString(e.what());
+        }
+    }
+
+
     //Calculate numerical values and apply moving average. Window size = bufSize
     QVariantMap map;
-    int s;
-    QByteArray q;
-    //Header is first set of 3 bytes
     //ECG (RA-LA)
-    q =  baIn.mid(6,3);
-    s =  q.toHex().toUInt(&ok,16);
-    s = s*getSign(q);
-    ecg.push_back(s);
-    //map.insert("ECG", std::accumulate(ecg.begin(), ecg.end(), 0)/bufSize);
+    ecg.push_back(intIn[2]);
     map.insert("ECG", tapFilt->applyFilt(ecg));
-    //map.insert("ECG", s);
+    map.insert("ECG", intIn[2]);
     //BCGx
-    q =  baIn.mid(12,3);
-    s =  q.toHex().toUInt(&ok,16);
-    s = s*getSign(q);
-    bcgx.push_back(s);
+    bcgx.push_back(intIn[4]);
     map.insert("BCGx", tapFilt->applyFilt(bcgx));
-    //map.insert("BCGx", s);
     //BCGy
-    q =  baIn.mid(15,3);
-    s =  q.toHex().toUInt(&ok,16);
-    s = s*getSign(q);
-    bcgy.push_back(s);
+    bcgy.push_back(-intIn[3]);
     map.insert("BCGy", tapFilt->applyFilt(bcgy));
-    //map.insert("BCGy", s);
     //BCGz
-    q =  baIn.mid(18,3);
-    s =  q.toHex().toUInt(&ok,16);
-    s = s*getSign(q);
-    bcgz.push_back(s);
+    bcgz.push_back(intIn[5]);
     map.insert("BCGz", tapFilt->applyFilt(bcgz));
-    //map.insert("BCGz", s);
 
+    //BCGx2
+    bcgx2.push_back(intIn[10]);
+    map.insert("BCGx2", tapFilt->applyFilt(bcgx2));
+    //BCGy2
+    bcgy2.push_back(-intIn[9]);
+    map.insert("BCGy2", tapFilt->applyFilt(bcgy2));
+    //BCGz2
+    bcgz2.push_back(intIn[11]);
+    map.insert("BCGz2", tapFilt->applyFilt(bcgz2));
 
     emit appendSamples(map);
 }
